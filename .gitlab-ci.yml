@@ -1,0 +1,26 @@
+image: mcr.microsoft.com/playwright:focal
+
+stages:
+  - test
+
+variables:
+  # Set any environment variables here
+  NODE_ENV: test
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+test_playwright:
+  stage: test
+  script:
+    - npm ci
+    - npx playwright install --with-deps
+    - npx playwright test --reporter=dot
+  artifacts:
+    when: always
+    paths:
+      - playwright-report/
+  only:
+    - schedules

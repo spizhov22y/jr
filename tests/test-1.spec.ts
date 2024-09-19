@@ -1,54 +1,77 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures";
+import { GoogleSearchPage } from "../pages/googleSearch.page";
+import { ProjectPage } from "../pages/project.page";
+import { DeveloperPage } from "../pages/developer.page";
+import { findAndClickLink, navigateSlides } from "../utils/helper";
+import * as timeGenerator from "../utils/timegenerator";
 
-test("First", async ({ page }) => {
-  await page.goto("https://www.google.com/");
-  await page.getByLabel("Search", { exact: true }).click();
-  await page.getByLabel("Search", { exact: true }).fill("jrcustomwoodwork ca");
-  await page.goto(
-    "https://www.google.com/search?q=jrcustomwoodwork+ca&sca_esv=bc17f1d65ef343c6&source=hp&ei=DsznZoW4INa90PEP2PvUiAU&iflsig=AL9hbdgAAAAAZufaHnQ9-248CcGnpYOwjoDZArEB1pjK&ved=0ahUKEwiF96KL58aIAxXWHjQIHdg9FVEQ4dUDCA8&uact=5&oq=jrcustomwoodwork+ca&gs_lp=Egdnd3Mtd2l6IhNqcmN1c3RvbXdvb2R3b3JrIGNhMgcQIRigARgKMgcQIRigARgKMgcQIRigARgKSLMqUNEGWNEGcAF4AJABAJgBVaABVaoBATG4AQPIAQD4AQL4AQGYAgKgAmeoAgrCAhAQABgDGOUCGOoCGIwDGI8BwgIQEC4YAxjlAhjqAhiMAxiPAZgDC5IHATKgB_EE&sclient=gws-wiz"
-  );
-  await page.getByRole("button", { name: "Not now" }).click();
-  await page.getByRole("link", { name: "J&R Custom Woodwork // Home" }).click();
-  await page.getByRole("link", { name: "Projects" }).click();
-  await page
-    .locator("li")
-    .filter({ hasText: "Kitchen 02View Project" })
-    .getByRole("link")
-    .click();
-  await page.getByLabel("Button next slide").first().click();
-  await page.getByLabel("Button next slide").first().click();
-  await page.getByLabel("Button next slide").first().click();
-  await page.getByRole("link", { name: "All" }).click();
-  await page
-    .locator("li")
-    .filter({ hasText: "Kitchen 03View Project" })
-    .getByRole("link")
-    .click();
-  await page.getByLabel("Button next slide").first().click();
-  await page.getByLabel("Button next slide").first().click();
-  await page.getByText("All/Kitchens").click();
-  await page.getByRole("link", { name: "All" }).click();
-  await page
-    .locator("li")
-    .filter({ hasText: "Kitchen 04View Project" })
-    .getByRole("link")
-    .click();
-  await page.getByLabel("Button next slide").first().click();
-  await page.getByLabel("Button next slide").first().click();
-  await page.getByLabel("Button next slide").first().click();
-  await page.getByRole("link", { name: "About" }).click();
-  const page1Promise = page.waitForEvent("popup");
-  await page.getByLabel("Developer of the website").click();
-  const page1 = await page1Promise;
-  await page1.getByText("About", { exact: true }).click();
-  await page1.getByText("Projects", { exact: true }).click();
-  await page1.getByRole("navigation").getByText("Contacts").click();
-  const page2Promise = page1.waitForEvent("popup");
-  await page1.getByRole("link", { name: "maxweb.studio" }).click();
-  const page2 = await page2Promise;
+test("Test-1: Google Search and Navigate to J&R Custom Woodwork", async ({
+  page,
+}) => {
+  const googleSearchPage = new GoogleSearchPage(page);
+  const projectPage = new ProjectPage(page);
 
-  // Closing the pages explicitly
-  await page2.close();
-  await page1.close();
-  await page.close();
+  // Navigate to Google and accept cookies
+  await googleSearchPage.navigateToGoogle();
+  await googleSearchPage.acceptCookiesIfVisible();
+
+  // Perform the search with human-like behavior
+  await googleSearchPage.performSearch("jrcustomwoodwork ca");
+
+  // Use the helper function to find and click the link on the search results
+  const found = await findAndClickLink(page, "J&R Custom Woodwork // Home");
+
+  if (found) {
+    // Navigate through kitchen projects
+    await projectPage.navigateToProjects(); // Navigate to Projects page
+    await projectPage.openKitchenProject("Kitchen 01"); // Open Kitchen 02
+    // Click slides 3 times
+    await navigateSlides(
+      page,
+      "Button next slide",
+      3,
+      timeGenerator.waitOneToThreeTime()
+    );
+
+    await projectPage.navigateToAllProjects(); // Navigate to Projects page
+    await projectPage.openKitchenProject("Kitchen 04");
+    await navigateSlides(
+      page,
+      "Button next slide",
+      2,
+      timeGenerator.waitOneToThreeTime()
+    );
+
+    await projectPage.navigateToAllProjects(); // Navigate to Projects page
+    await projectPage.openKitchenProject("Kitchen 03");
+    await navigateSlides(
+      page,
+      "Button next slide",
+      3,
+      timeGenerator.waitOneToThreeTime()
+    );
+
+    // Developer-related actions
+    const developerPopupPromise = page.waitForEvent("popup"); // Create the promise for the developer popup
+    await page.getByLabel("Developer of the website").click(); // Click to open the developer website
+    const developerPopup = await developerPopupPromise; // Resolve the popup promise when it opens
+
+    const developerPage = new DeveloperPage(developerPopup);
+    await developerPage.navigateToAbout(); // Navigate to About
+    await developerPage.navigateToProjects(); // Navigate to Projects
+    await developerPage.navigateToContacts(); // Navigate to Contacts
+
+    // Open maxweb.studio in a new popup
+    const maxwebStudioPopupPromise = developerPopup.waitForEvent("popup"); // Create the promise for the maxweb.studio popup
+    await developerPage.openMaxWebStudio(); // Click the link to open maxweb.studio
+    const maxwebStudioPopup = await maxwebStudioPopupPromise; // Resolve the popup promise when it opens
+
+    // Close the popups
+    await maxwebStudioPopup.close(); // Close the maxweb.studio popup
+    await developerPopup.close(); // Close the developer popup
+    await page.close(); // Close the original page
+  } else {
+    console.log("Link not found in search results.");
+    await page.close();
+  }
 });
