@@ -11,16 +11,20 @@ cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - node_modules/
+    - ms-playwright/ # Change to a relative path to avoid warnings
 
 test_playwright:
   stage: test
   script:
     - npm ci
     - npx playwright install --with-deps
-    - npx playwright test --reporter=dot
+    - yarn playwright test --reporter=dot,junit
   artifacts:
     when: always
     paths:
-      - playwright-report/
+      - test_results.xml # JUnit report is saved in the root
+      - playwright-report/ # Playwright HTML report is saved here
+    reports:
+      junit: test_results.xml
   only:
-    - schedules
+    - branches
