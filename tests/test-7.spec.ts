@@ -46,7 +46,7 @@ test("Test-7: Google Search and Navigate to J&R Custom Woodwork", async ({
     await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
 
     // Open the "Kitchen 02 View Project"
-    await projectPage.openKitchenProject("Kitchen 01");
+    await projectPage.openKitchenProject("Kitchen 03");
     await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
 
     // Navigate through the "Kitchen 02" slides with random delays

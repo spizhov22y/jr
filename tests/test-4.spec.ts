@@ -55,7 +55,7 @@ test("Test-4: Google Search and Navigate to J&R Custom Woodwork", async ({
     );
 
     // Navigate to the "About" page
-    await page.getByRole("link", { name: "About" }).click();
+    await page.getByRole("link", { name: "Contact" }).click();
     await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
 
     // Open the Facebook page in a new tab

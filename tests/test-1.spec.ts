@@ -24,7 +24,7 @@ test("Test-1: Google Search and Navigate to J&R Custom Woodwork", async ({
   if (found) {
     // Navigate through kitchen projects
     await projectPage.navigateToProjects(); // Navigate to Projects page
-    await projectPage.openKitchenProject("Kitchen 01"); // Open Kitchen 02
+    await projectPage.openKitchenProject("Kitchen 03"); // Open Kitchen 02
     // Click slides 3 times
     await navigateSlides(
       page,
@@ -34,7 +34,7 @@ test("Test-1: Google Search and Navigate to J&R Custom Woodwork", async ({
     );
 
     await projectPage.navigateToAllProjects(); // Navigate to Projects page
-    await projectPage.openKitchenProject("Kitchen 04");
+    await projectPage.openKitchenProject("Kitchen 02");
     await navigateSlides(
       page,
       "Button next slide",
@@ -43,7 +43,7 @@ test("Test-1: Google Search and Navigate to J&R Custom Woodwork", async ({
     );
 
     await projectPage.navigateToAllProjects(); // Navigate to Projects page
-    await projectPage.openKitchenProject("Kitchen 03");
+    await projectPage.openKitchenProject("Kitchen 01");
     await navigateSlides(
       page,
       "Button next slide",

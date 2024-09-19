@@ -23,7 +23,7 @@ test("Test-2: Maxweb Studio and J&R Woodwork Navigation", async ({ page }) => {
   await projectPage.navigateToProjects(); // Navigate to Projects page inside page1
 
   // Navigate to Kitchens and open "Kitchen 01"
-  await projectPage.openKitchenProject("Kitchen 01");
+  await projectPage.openKitchenProject("Kitchen 02");
 
   // Navigate through 12 slides in "Kitchen 01" with random delays
   await navigateSlides(

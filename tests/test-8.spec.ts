@@ -46,6 +46,22 @@ test("Test-8: Google Search and Navigate to J&R Custom Woodwork", async ({
     await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
 
     // Open the "Kitchen 02 View Project"
+    await projectPage.openKitchenProject("Kitchen 02");
+    await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
+
+    // Navigate through the "Kitchen 02" slides with random delays
+    await navigateSlides(
+      page,
+      "Button next slide",
+      2,
+      timeGenerator.waitOneToThreeTime()
+    );
+
+    // Navigate back to all projects
+    await projectPage.navigateToAllProjects();
+    await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
+
+    // Open the "Kitchen 02 View Project"
     await projectPage.openKitchenProject("Kitchen 01");
     await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
 
@@ -62,23 +78,7 @@ test("Test-8: Google Search and Navigate to J&R Custom Woodwork", async ({
     await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
 
     // Open the "Kitchen 02 View Project"
-    await projectPage.openKitchenProject("Kitchen 04");
-    await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
-
-    // Navigate through the "Kitchen 02" slides with random delays
-    await navigateSlides(
-      page,
-      "Button next slide",
-      2,
-      timeGenerator.waitOneToThreeTime()
-    );
-
-    // Navigate back to all projects
-    await projectPage.navigateToAllProjects();
-    await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
-
-    // Open the "Kitchen 02 View Project"
-    await projectPage.openKitchenProject("Kitchen 02");
+    await projectPage.openKitchenProject("Kitchen 03");
     await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
 
     // Navigate through the "Kitchen 02" slides with random delays
