@@ -19,6 +19,7 @@ test_playwright:
     - npm ci
     - npx playwright install --with-deps
     - yarn playwright test --reporter=dot,junit
+  timeout: 2h # Increases the timeout to 2 hours
   artifacts:
     when: always
     paths:
