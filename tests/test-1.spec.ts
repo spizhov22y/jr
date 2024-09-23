@@ -45,6 +45,9 @@ function getRandomStepCount() {
 test("Test-1: Search and Navigate to J&R Custom Woodwork (Cross-Device) with Random Context", async ({
   browser,
 }) => {
+  // Log the test number at the start
+  console.log("Running Test-1: Search and Navigate to J&R Custom Woodwork");
+  
   const context = await createRandomContext(browser);
   const page = await context.newPage();
 

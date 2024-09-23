@@ -42,9 +42,11 @@ function getRandomStepCount() {
   return Math.floor(Math.random() * (7 - 2 + 1)) + 2;
 }
 
-test("Test-1: Search and Navigate to J&R Custom Woodwork (Cross-Device) with Random Context", async ({
+test("Test-2: Search and Navigate to J&R Custom Woodwork (Cross-Device) with Random Context", async ({
   browser,
 }) => {
+  // Log the test number at the start
+  console.log("Running Test-2: Search and Navigate to J&R Custom Woodwork");
   const context = await createRandomContext(browser);
   const page = await context.newPage();
 

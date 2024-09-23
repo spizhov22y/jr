@@ -4,7 +4,7 @@ export const keywords = [
   "custom kitchens kelowna",
   // "West Kelowna custom furniture",
   "Custom kitchen cabinets Kelowna",
-  // "Custom woodwork Kelowna",
+  "Custom woodwork Kelowna",
   // "Kitchen remodeling Kelowna jr",
   // "Custom kitchen designs West Kelowna",
   // "Kelowna kitchen renovations",
