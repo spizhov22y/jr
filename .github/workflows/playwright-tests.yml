@@ -1,0 +1,62 @@
+name: Playwright Tests
+
+# Trigger workflow on push or pull request, or on a schedule (every hour)
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "0 * * * *" # Run every hour
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16] # Specify Node.js version
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright with dependencies
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: |
+          yarn playwright test --reporter=dot,junit
+        timeout-minutes: 120 # Set timeout to 2 hours
+
+      - name: Upload Playwright reports
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright-report
+          path: playwright-report
+
+      - name: Upload JUnit test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: test_results.xml
