@@ -35,5 +35,5 @@ export function waitKeyStroke(): number {
 }
 
 export function waitNextButton(): number {
-  return getRandomInt(400, 750); //
+  return getRandomInt(50, 100); //
 }

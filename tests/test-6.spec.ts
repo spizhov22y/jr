@@ -1,80 +1,121 @@
 import { test, expect } from "../fixtures";
 import { GoogleSearchPage } from "../pages/googleSearch.page";
-import { ProjectPage } from "../pages/project.page";
-import { findAndClickLink, navigateSlides } from "../utils/helper";
-import * as timeGenerator from "../utils/timegenerator"; // Import the time generator utility
+import { ProjectPage } from "../pages/project1.page";
+import { findAndClickLink, navigateSlides, scrollPage } from "../utils/helper";
+import * as timeGenerator from "../utils/timegenerator";
+import { createRandomContext } from "../fixtures";
+import { getRandomKeyword } from "../utils/keywords";
 
-test("Test-6: Google Search and Navigate to J&R Custom Woodwork", async ({
-  page,
+// Function to get a random kitchen project name
+const kitchenProjects = [
+  "Kitchen 01",
+  "Kitchen 02",
+  "Kitchen 03",
+  "Kitchen 04",
+  "Wardrobe 01",
+  "Bathroom 01",
+  "Fireplace 01",
+  "Fireplace 02",
+  "Wetbar 01",
+  "Wetbar 02",
+];
+
+function getRandomKitchenProject() {
+  const randomIndex = Math.floor(Math.random() * kitchenProjects.length);
+  return kitchenProjects[randomIndex];
+}
+
+// Function to randomly choose between Home, Contacts, and About pages
+function getRandomNavigationPage() {
+  const pages = ["Home", "Contact", "About"];
+  const randomIndex = Math.floor(Math.random() * pages.length);
+  return pages[randomIndex];
+}
+
+// Function to decide if Facebook interaction is needed (randomly skip it)
+function shouldOpenFacebook() {
+  return Math.random() < 0.5; // 50% chance to open Facebook
+}
+
+// Function to generate a random number of steps (between 2 and 7)
+function getRandomStepCount() {
+  return Math.floor(Math.random() * (7 - 2 + 1)) + 2;
+}
+
+test("Test-1: Search and Navigate to J&R Custom Woodwork (Cross-Device) with Random Context", async ({
+  browser,
 }) => {
+  const context = await createRandomContext(browser);
+  const page = await context.newPage();
+
   const googleSearchPage = new GoogleSearchPage(page);
   const projectPage = new ProjectPage(page);
 
-  // Navigate to Google and accept cookies if prompted
   await googleSearchPage.navigateToGoogle();
   await googleSearchPage.acceptCookiesIfVisible();
 
-  // Perform the search with human-like typing and scrolling behavior
-  const searchQuery = "Custom kitchen cabinets Kelowna";
-  await googleSearchPage.performSearch(searchQuery); // Handles typing, scrolling, and random delays
+  const searchText = getRandomKeyword();
+  await googleSearchPage.performSearch(searchText);
+  await scrollPage(page, "down");
 
-  // Use the helper function to find and click the desired link
-  const found = await findAndClickLink(
+  // Ensure the correct link to J&R Custom Woodwork is clicked
+  let found = await findAndClickLink(
     page,
-    "J&R Custom Woodwork // Kelowna Custom Kitchen Cabinets #3"
+    "J&R Custom Woodwork",
+    "jrcustomwoodwork.ca"
   );
 
   if (found) {
-    // Navigate to the "Kitchens" section
+    await scrollPage(page, "up");
+    await projectPage.closeHamburgerMenuIfVisible();
     await projectPage.navigateToProjects();
-    await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
+    await page.waitForTimeout(timeGenerator.waitSevenToTenTime());
 
-    // Open the "Kitchen 01 View Project"
-    await projectPage.openKitchenProject("Kitchen 02");
-    await page.waitForTimeout(timeGenerator.waitTwoToFiveTime()); // Simulate human-like delay
+    const numberOfSteps = getRandomStepCount();
+    console.log(`Performing ${numberOfSteps} steps through the projects.`);
 
-    // Navigate through the "Kitchen 01" slides with random delays
-    await navigateSlides(
-      page,
-      "Button next slide",
-      2,
-      timeGenerator.waitOneToThreeTime()
-    );
+    for (let i = 0; i < numberOfSteps; i++) {
+      const randomKitchenProject = getRandomKitchenProject();
+      console.log(`Navigating to project: ${randomKitchenProject}`);
+      await projectPage.openKitchenProject(randomKitchenProject);
+      await page.waitForTimeout(timeGenerator.waitOneToThreeTime());
 
-    // Navigate back to all projects
-    await projectPage.navigateToAllProjects();
-    await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
+      // Randomly navigate slides (capped at 12 slides) with variable delay
+      await navigateSlides(
+        page,
+        "Button next slide",
+        timeGenerator.waitOneToThreeTime // Pass the delay function reference
+      );
 
-    // Open the "Kitchen 02 View Project"
-    await projectPage.openKitchenProject("Kitchen 04");
-    await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
+      if (i < numberOfSteps - 1) {
+        await projectPage.navigateToAllProjects();
+      }
+    }
 
-    // Navigate through the "Kitchen 02" slides with random delays
-    await navigateSlides(
-      page,
-      "Button next slide",
-      2,
-      timeGenerator.waitOneToThreeTime()
-    );
+    // Close hamburger menu if visible before navigating to other pages
+    await projectPage.closeHamburgerMenuIfVisible();
 
-    // Navigate to the "Home" page
-    await page.getByRole("link", { name: "Home" }).click();
-    await page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
-
-    // Open the Facebook page in a new tab
-    const [facebookPopup] = await Promise.all([
-      page.waitForEvent("popup"),
-      page.getByLabel("Facebook page").click(),
-    ]);
-
-    // Simulate delay before closing the new tab
+    // Randomly navigate to Home, Contacts, or About
+    const randomPage = getRandomNavigationPage();
+    console.log(`Navigating to ${randomPage} page`);
+    await page.getByRole("link", { name: randomPage }).click();
     await page.waitForTimeout(timeGenerator.waitOneToThreeTime());
 
-    // Close the Facebook page and the original page
-    await facebookPopup.close();
-    await page.close();
-  } else {
-    console.log("Link not found in search results.");
+    // Randomly decide whether to open Facebook
+    if (shouldOpenFacebook()) {
+      console.log("Opening Facebook page");
+      const facebookPopupPromise = page.waitForEvent("popup");
+      await page.getByLabel("Facebook page").click();
+      const facebookPopup = await facebookPopupPromise;
+
+      await page.waitForTimeout(timeGenerator.waitOneToThreeTime());
+      await facebookPopup.close();
+    } else {
+      console.log("Skipping Facebook interaction");
+    }
+
     await page.close();
   }
+
+  await context.close();
 });

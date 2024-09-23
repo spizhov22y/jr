@@ -1,3 +1,5 @@
+// /pages/project.page.ts
+
 import { Page } from "@playwright/test";
 import * as timeGenerator from "../utils/timegenerator";
 
@@ -30,12 +32,6 @@ export class ProjectPage {
     await this.page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
   }
 
-  // Navigate to the "All Kitchens" section
-  async navigateToAllKitchens() {
-    await this.allKitchensLink.click();
-    await this.page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
-  }
-
   // Navigate to the "All Projects" section
   async navigateToAllProjects() {
     await this.allLink.click();
@@ -46,18 +42,6 @@ export class ProjectPage {
   async openKitchenProject(projectName: string) {
     await this.kitchenProjectLink(projectName).click();
     await this.page.waitForTimeout(timeGenerator.waitOneToThreeTime());
-  }
-
-  // Navigate to the "Wardrobes" section
-  async navigateToWardrobes() {
-    await this.wardrobesLink.click();
-    await this.page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate human-like delay
-  }
-
-  // Open a specific project from the "Wardrobes" section
-  async openWardrobesProject() {
-    await this.viewProjectLink.click();
-    await this.page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate delay between actions
   }
 
   // Close the hamburger menu if it is visible (for mobile views)

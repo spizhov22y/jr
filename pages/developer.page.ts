@@ -11,7 +11,11 @@ export class DeveloperPage {
       .getByText("Contacts"),
     private readonly maxWebStudioLink = page.getByRole("link", {
       name: "maxweb.studio",
-    })
+    }),
+    // Hamburger menu locator for mobile view
+    private readonly developerHamburgerMenuButton = page.locator(
+      "button._navButton_4r0jz_51"
+    )
   ) {}
 
   async navigateToAbout() {
@@ -30,5 +34,13 @@ export class DeveloperPage {
     const page2Promise = this.page.waitForEvent("popup");
     await this.maxWebStudioLink.click();
     return page2Promise;
+  }
+
+  // Close the hamburger menu if it is visible (for mobile views)
+  async closeHamburgerMenuIfVisible() {
+    if (await this.developerHamburgerMenuButton.isVisible()) {
+      await this.developerHamburgerMenuButton.click();
+      await this.page.waitForTimeout(1000); // Optional delay for a smoother close interaction
+    }
   }
 }

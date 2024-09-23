@@ -2,18 +2,17 @@ import { Page } from "@playwright/test";
 import * as timeGenerator from "../utils/timegenerator";
 
 export class GoogleSearchPage {
-  constructor(
-    private readonly page: Page,
-    private readonly acceptCookiesButton = page.locator(
-      'button:has-text("I agree")'
-    ),
-    private readonly searchInput = page.getByRole("combobox", {
-      name: "Search",
-    }),
-    private readonly notNowButton = page.locator(
-      'div[role="button"]:has-text("Not now")'
-    ) // Updated locator for the "Not now" button
-  ) {}
+  // Declare the locators as readonly properties
+  private readonly acceptCookiesButton;
+  private readonly searchInput;
+  private readonly notNowButton;
+
+  // Constructor to initialize the locators
+  constructor(private readonly page: Page) {
+    this.acceptCookiesButton = page.locator('button:has-text("I agree")');
+    this.searchInput = page.locator("textarea[name='q'], input[name='q']");
+    this.notNowButton = page.getByRole("button", { name: "Not now" });
+  }
 
   async navigateToGoogle() {
     await this.page.goto("https://www.google.com/");
@@ -40,18 +39,15 @@ export class GoogleSearchPage {
     await this.page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Random delay after scrolling
   }
 
+  // Dismiss the location popup if the "Not now" button is visible
   async dismissLocationPopupIfVisible() {
     try {
-      // Wait for up to 10 seconds for the "Not now" button to appear, then click it
-      await this.page.waitForSelector(
-        'div[role="button"]:has-text("Not now")',
-        { timeout: 10000 }
-      );
-      console.log('Clicking "Not now" button.');
-      await this.notNowButton.click();
-      await this.page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate delay after dismissing pop-up
+      if (await this.notNowButton.isVisible()) {
+        console.log('Clicking "Not now" button.');
+        await this.notNowButton.click();
+        await this.page.waitForTimeout(timeGenerator.waitOneToThreeTime()); // Simulate delay after dismissing pop-up
+      }
     } catch (e) {
-      // If the button doesn't appear, we catch the timeout error and continue
       console.log('"Not now" button did not appear, continuing.');
     }
   }
