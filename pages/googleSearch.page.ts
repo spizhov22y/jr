@@ -27,6 +27,7 @@ export class GoogleSearchPage {
   }
 
   async performSearch(query: string) {
+    console.log(`Selected Search Query: ${query}`); // Add this line to log the search query
     await this.searchInput.click();
     for (const char of query) {
       await this.page.keyboard.press(char);
