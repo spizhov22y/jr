@@ -9,7 +9,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: "0 */13 * * *" # Run every 13 hours
+    - cron: "0 * * * *" # Run every 1 hour
 
 jobs:
   test:
